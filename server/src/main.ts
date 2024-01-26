@@ -19,6 +19,9 @@ async function bootstrap() {
       type: VersioningType.URI,
       defaultVersion: '1',
   });
+
+  app.setGlobalPrefix("api");
+
   app.useLogger(app.get(Logger));
 
   const reflector = app.get(Reflector);
@@ -45,8 +48,6 @@ async function bootstrap() {
   if(process.env.NODE_ENV !== 'prod'){
     swaggerConfig(app);
   }
-
-  app.setGlobalPrefix("api");
 
   await app.listen(3000);
 }

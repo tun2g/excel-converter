@@ -2,8 +2,10 @@ import { Controller, Get, HttpCode, HttpStatus, Req } from '@nestjs/common';
 import { TokenService } from './token.service';
 import { Role } from 'src/security/decorators/role.decorator';
 import { RoleType } from 'src/lib/constants';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('token')
+@ApiTags('token')
 export class TokenController {
     constructor(
         private readonly tokenService: TokenService

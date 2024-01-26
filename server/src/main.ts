@@ -3,10 +3,11 @@ import { AppModule } from './app.module';
 import helmet from 'helmet';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { HttpStatus, UnprocessableEntityException, ValidationPipe, VersioningType } from '@nestjs/common';
-import { HttpExceptionFilter } from './lib/filters/entity-exception.filter';
-import { BadRequestExceptionFilter } from './lib/filters/bad-request-exception.filter';
+import { HttpExceptionFilter } from 'src/lib/filters/entity-exception.filter';
+import { BadRequestExceptionFilter } from 'src/lib/filters/bad-request-exception.filter';
 import * as process from 'process';
-import { swaggerConfig } from './lib/configs/swagger/swagger.config';
+import { swaggerConfig } from 'src/lib/configs/swagger/swagger.config';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule,{ bufferLogs: true });
@@ -34,10 +35,12 @@ async function bootstrap() {
         whitelist: true,
         errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         transform: true,
-        dismissDefaultMessages: true,
+        dismissDefaultMessages: false,
         exceptionFactory: (errors) => new UnprocessableEntityException(errors),
       }),
   );
+
+  useContainer(app.select(AppModule), { fallbackOnErrors: true })
 
   if(process.env.NODE_ENV !== 'prod'){
     swaggerConfig(app);

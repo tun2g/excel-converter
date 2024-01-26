@@ -30,7 +30,17 @@ export class EnvVariableService{
                     port: this.configService.get<string>('REDIS_PORT'),
                     username: this.configService.get<string>('REDIS_USER_NAME'),
                     password: this.configService.get<string>('REDIS_PASSWORD'),   
-                }
+                },
+                auth:{
+                    accessTokenSecret: this.configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+                    accessTokenExpirationTime: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRATION_TIME'),
+                    refreshTokenSecret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+                    refreshTokenExpirationTime: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRATION_TIME'),
+                },
+                tokenUsage:{
+                    user: this.configService.get<number>('USER_TOKEN_USAGE'),
+                    nonUser: this.configService.get<number>('NON_USER_TOKEN_USAGE'),
+                },
             }
         }
         return this.envVars;

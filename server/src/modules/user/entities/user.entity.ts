@@ -1,4 +1,5 @@
 import { AuditableEntity } from "src/lib/common/entities/auditable.entity";
+import { AuthProviderType } from "src/security/constants";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({
@@ -11,17 +12,20 @@ export class User extends AuditableEntity {
   @Column({ type: 'text', unique: true })
   email: string;
 
-  @Column({ type: 'text', nullable: false })
-  hashed_password: string;
+  @Column({ type: 'text', nullable: true })
+  hashedPassword: string;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text', nullable: true })
   username: string;
 
   @Column({ type: 'boolean', default: true })
-  is_active: boolean;
+  isActive: boolean;
+
+  @Column({ type: 'enum', enum: AuthProviderType })
+  authProvider: AuthProviderType;
 
   @Column({
     nullable: true,
   })
-  hashed_refresh_token?: string;
+  hashedRefreshToken?: string;
 }

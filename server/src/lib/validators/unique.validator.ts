@@ -1,59 +1,61 @@
 import { InjectDataSource } from '@nestjs/typeorm';
 import {
   registerDecorator,
-  ValidationArguments,
-  ValidationOptions,
+  type ValidationArguments,
+  type ValidationOptions,
   ValidatorConstraint,
-  ValidatorConstraintInterface,
+  type ValidatorConstraintInterface,
 } from 'class-validator';
 import {
   DataSource,
-  EntitySchema,
-  FindOptionsWhere,
-  ObjectType,
+  type EntitySchema,
+  type FindOptionsWhere,
+  type ObjectType,
 } from 'typeorm';
 
-@ValidatorConstraint({ name: 'isExist', async: true })
-export class IsExistValidator implements ValidatorConstraintInterface {
+
+@ValidatorConstraint({ name: 'unique', async: true })
+export class UniqueValidator implements ValidatorConstraintInterface {
   constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   public async validate<E>(
     _value: string,
-    args: IIsNotExistValidationArguments<E>,
+    args: IUniqueValidationArguments<E>,
   ): Promise<boolean> {
     const [entityClass, findCondition] = args.constraints;
 
     return (
       (await this.dataSource.getRepository(entityClass).count({
         where: findCondition(args),
-      })) > 0
+      })) <= 0
     );
   }
 
   defaultMessage(args: ValidationArguments): string {
-    return `The selected ${args.property} is not exists`;
+
+    return `${args.property} with value ${args.value} already exists`;
   }
 }
 
-type IsNotExistValidationConstraints<E> = [
+type UniqueValidationConstraints<E> = [
   ObjectType<E> | EntitySchema<E> | string,
   (validationArguments: ValidationArguments) => FindOptionsWhere<E>,
 ];
-interface IIsNotExistValidationArguments<E> extends ValidationArguments {
-  constraints: IsNotExistValidationConstraints<E>;
+interface IUniqueValidationArguments<E> extends ValidationArguments {
+  constraints: UniqueValidationConstraints<E>;
 }
 
-export function IsExistField<E>(
-  constraints: Partial<IsNotExistValidationConstraints<E>>,
+export function UniqueField<E>(
+  constraints: Partial<UniqueValidationConstraints<E>>,
   validationOptions?: ValidationOptions,
 ): PropertyDecorator {
-  return (object, propertyName: string) => {
+  return function (object, propertyName: string) {
     registerDecorator({
       target: object.constructor,
       propertyName,
       options: validationOptions,
       constraints,
-      validator: IsExistValidator,
+      validator: UniqueValidator,
     });
   };
 }

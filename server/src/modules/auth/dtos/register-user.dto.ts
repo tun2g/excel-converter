@@ -6,8 +6,9 @@ import {
     Matches,
     MinLength,
 } from 'class-validator';
-import { MatchField } from 'src/lib/validators/match-field.validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from 'src/modules/user/entities/user.entity';
+import { MatchField, UniqueField } from 'src/lib/validators';
 
 export class RegisterUserDto {
     @IsNotEmpty({message: "username not empty"})
@@ -18,6 +19,7 @@ export class RegisterUserDto {
     readonly username: string;
     
     @IsEmail({},{message: "Invalid email address"})
+    @UniqueField([ User, (validationArguments) => ({ email: validationArguments.value }) ])
     @ApiProperty()
     readonly email: string;
 

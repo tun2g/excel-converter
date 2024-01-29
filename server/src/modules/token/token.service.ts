@@ -5,7 +5,7 @@ import { TokenUsageRepository } from './token.repository';
 
 @Injectable()
 export class TokenService {
-    private tokensMap:  { [key in RoleType]: number };;
+    private tokensMap:  { [key in RoleType]: number };
     constructor(
         private readonly tokenUsageRepository: TokenUsageRepository ,
         

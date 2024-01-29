@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, Res, UploadedFile } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator, HttpCode, HttpStatus, MaxFileSizeValidator, ParseFilePipe, Post, Req, Res, UploadedFile } from '@nestjs/common';
 import { FileService } from './file.service';
 import { Role } from 'src/security/decorators/role.decorator';
 import { RoleType } from 'src/lib/constants';
@@ -22,8 +22,14 @@ export class FileController {
     async convertToExcel(
         @Req() req,
         @Body() convertDto: ConvertDto,
-        @UploadedFile() file: Express.Multer.File,
-        @Res() res
+        @Res() res,
+        @UploadedFile(new ParseFilePipe({
+            validators: [
+              new MaxFileSizeValidator({ maxSize: 100000 }),
+              new FileTypeValidator({ fileType: 'json' }),
+            ],
+            fileIsRequired: false
+        }),) file: Express.Multer.File,
     ){
         return await this.fileService.convertToExcel(convertDto, req, res);
     }
